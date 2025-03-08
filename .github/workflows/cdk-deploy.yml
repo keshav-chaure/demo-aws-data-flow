@@ -49,5 +49,8 @@ jobs:
       - name: Synthesize CloudFormation template
         run: cdk synth
 
-      - name: Deploy CDK stack
-        run: cdk deploy MyCdkStack-${{ env.STACK_ENV }} --require-approval never
+      - name: Get CDK Stack Name
+        run: echo "STACK_NAME=$(cdk list)" >> $GITHUB_ENV
+
+      - name: Deploy CDK Stack
+        run: cdk deploy $STACK_NAME --require-approval never
