@@ -58,5 +58,12 @@ jobs:
       - name: Check for  Changes
         run: cdk diff || echo "No changes to deploy"
 
-      - name: Deploy CDK Stack
-        run: cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never
+        run: |
+          if cdk diff | grep -q "Bucket"; then
+            echo "Deploying changes..."
+            cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never
+          else
+            echo "No changes in bucket, skipping deployment."
+          fi
+
+      
