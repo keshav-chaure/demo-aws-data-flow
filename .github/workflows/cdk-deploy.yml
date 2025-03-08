@@ -61,7 +61,7 @@ jobs:
               echo "No changes detected, skipping deployment."
             else
               echo "Changes detected, deploying..."
-              cdk deploy --require-approval never
+              cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never
             fi
 
       
