@@ -41,7 +41,7 @@ jobs:
             echo "STACK_ENV=dev" >> $GITHUB_ENV
           fi
 
-      - name: Bootstrap CDK (if required)
+      - name: Bootstrap  CDK (if required)
         run: |
           cdk bootstrap aws://162040854450/ap-south-1 || echo "CDK already bootstrapped"
 
