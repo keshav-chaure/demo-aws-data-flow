@@ -52,5 +52,8 @@ jobs:
       - name: Get CDK Stack Name from Synthesized Output
         run: echo "STACK_NAME=$(cdk synth | grep -oP '(?<=AWS::CloudFormation::Stack").*' | head -n 1)" >> $GITHUB_ENV
 
+      - name: Get environment (Dev or Prod)
+        run: echo "ENV_NAME=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}" >> $GITHUB_ENV
+
       - name: Deploy CDK Stack
-        run: cdk deploy $STACK_NAME --require-approval never
+        run: cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never

@@ -1,0 +1,11 @@
+{
+    "dev": {
+      "bucketName": "data-pipeline-bucket-dev",
+      "region": "ap-south-1"
+    },
+    "prod": {
+      "bucketName": "data-pipeline-bucket-prod",
+      "region": "ap-south-1"
+    }
+  }
+  
