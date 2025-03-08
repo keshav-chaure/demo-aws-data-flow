@@ -55,5 +55,8 @@ jobs:
       - name: Get environment (Dev or Prod)
         run: echo "ENV_NAME=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}" >> $GITHUB_ENV
 
+      - name: Check for Changes
+        run: cdk diff || echo "No changes to deploy"
+
       - name: Deploy CDK Stack
         run: cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never
