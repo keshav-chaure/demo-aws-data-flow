@@ -49,8 +49,8 @@ jobs:
       - name: Synthesize CloudFormation template
         run: cdk synth
 
-      - name: Get CDK Stack Name
-        run: echo "STACK_NAME=$(cdk list)" >> $GITHUB_ENV
+      - name: Get CDK Stack Name from Synthesized Output
+        run: echo "STACK_NAME=$(cdk synth | grep -oP '(?<=AWS::CloudFormation::Stack").*' | head -n 1)" >> $GITHUB_ENV
 
       - name: Deploy CDK Stack
         run: cdk deploy $STACK_NAME --require-approval never
