@@ -56,14 +56,14 @@ jobs:
         run: echo "ENV_NAME=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}" >> $GITHUB_ENV
 
       - name: Check for  Changes
-        run: cdk diff || echo "No changes to deploy"
-
         run: |
-          if cdk diff | grep -q "Bucket"; then
-            echo "Deploying changes..."
-            cdk deploy $STACK_NAME -c env=$ENV_NAME --require-approval never
-          else
-            echo "No changes in bucket, skipping deployment."
-          fi
+            if cdk diff | grep -q "There were no differences"; then
+              echo "No changes detected, skipping deployment."
+            else
+              echo "Changes detected, deploying..."
+              cdk deploy --require-approval never
+            fi
+
+      
 
       
