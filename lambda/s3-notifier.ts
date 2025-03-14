@@ -10,6 +10,8 @@ const REQUIRED_HEADERS = ['email', 'first_name', 'last_name'];
 export const handler: S3Handler = async (event) => {
   const bucketName = event.Records[0].s3.bucket.name;
   const objectKey = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
+  console.log("bucketName : ",bucketName);
+  console.log("ObjectKey : ",objectKey);
 
   try {
     // Fetch the object from S3
@@ -17,36 +19,11 @@ export const handler: S3Handler = async (event) => {
       Bucket: bucketName,
       Key: objectKey,
     };
+    await sendNotification('Error processing S3 file.');
     const data = await s3.getObject(params).promise();
-
-    // Parse the CSV data
-    const records: any[] = [];
-    const stream = data.Body?.toString('utf-8')?.pipe(csvParser());
-
-    if (stream) {
-      for await (const record of stream) {
-        records.push(record);
-      }
-    }
-
-    // Validate headers
-    const headers = Object.keys(records[0]);
-    const missingHeaders = REQUIRED_HEADERS.filter(header => !headers.includes(header));
-
-    if (missingHeaders.length > 0) {
-      await sendNotification(`Missing headers: ${missingHeaders.join(', ')}`);
-      return;
-    }
-
-    // Validate data presence
-    const invalidRows = records.filter(record =>
-      REQUIRED_HEADERS.some(header => !record[header])
-    );
-
-    if (invalidRows.length > 0) {
-      await sendNotification(`Found ${invalidRows.length} rows with missing data.`);
-      return;
-    }
+    console.log(typeof data)
+    console.log(data)
+     
 
     console.log('CSV file is valid.');
   } catch (error) {
