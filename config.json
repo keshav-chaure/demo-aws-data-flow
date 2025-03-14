@@ -1,11 +1,13 @@
 {
     "dev": {
       "bucketName": "data-pipeline-bucket-dev-one",
-      "region": "ap-south-1"
+      "region": "ap-south-1",
+      "email": "keshav.chaure@gmail.com"
     },
     "prod": {
       "bucketName": "data-pipeline-bucket-prod",
-      "region": "ap-south-1"
+      "region": "ap-south-1",
+      "email": "keshav.chaure@gmail.com"
     }
   }
   
