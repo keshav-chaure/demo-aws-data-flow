@@ -1,5 +1,5 @@
 import { S3Event } from "aws-lambda";
-import * as AWS from "aws-sdk";
+import * as AWS from "aws-sdk"; 
 
 const sns = new AWS.SNS();
 
