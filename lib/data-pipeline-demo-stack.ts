@@ -59,7 +59,7 @@ export class DataPipelineDemoStack extends cdk.Stack {
       const s3Lambda = new NodejsFunction(this, 'S3UploadNotificationLambda', {
         runtime: lambda.Runtime.NODEJS_18_X,
         handler: 'handler',
-        entry: 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file
+        entry: 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file  Error: Cannot find entry file at lambda/s3-notifier.ts
         environment: {
             BUCKET_NAME: bucket.bucketName,
             SNS_TOPIC_ARN: topic.topicArn
