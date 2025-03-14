@@ -57,9 +57,9 @@ export const handler: S3Handler = async (event) => {
 
 const sendNotification = async (message: string) => {
   const params = {
-    Source: 'sender@example.com',
+    Source: 'keshav.chaure@gmail.com',
     Destination: {
-      ToAddresses: ['recipient@example.com'],
+      ToAddresses: ['keshav.chaure@gmail.com'],
     },
     Message: {
       Subject: {
