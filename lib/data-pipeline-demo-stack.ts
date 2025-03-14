@@ -3,7 +3,12 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as snsSubscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as s3Notifications from 'aws-cdk-lib/aws-s3-notifications';
-import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+ 
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+
+
+
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as fs from 'fs';
@@ -51,7 +56,7 @@ export class DataPipelineDemoStack extends cdk.Stack {
      // bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3Notifications.SnsDestination(topic));
 
       // ✅ Create Lambda Function
-      const s3Lambda = new lambda.NodejsFunction(this, 'S3UploadNotificationLambda', {
+      const s3Lambda = new NodejsFunction(this, 'S3UploadNotificationLambda', {
         runtime: lambda.Runtime.NODEJS_18_X,
         handler: 'handler',
         entry: 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file
