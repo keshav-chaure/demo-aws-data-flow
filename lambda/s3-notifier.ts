@@ -23,6 +23,29 @@ export const handler: S3Handler = async (event) => {
     const data = await s3.getObject(params).promise();
     console.log(typeof data)
     console.log(data)
+
+    const results: any[] = [];
+
+    // Create a readable stream from the S3 object data
+    const stream = require('stream');
+    const readableStream = new stream.Readable();
+    readableStream._read = () => {}; // _read is required but you can noop it
+    readableStream.push(data.Body);
+    readableStream.push(null);
+
+    // Pipe the readable stream into csv-parser
+    readableStream
+      .pipe(csvParser())
+      .on('data', (row: any) => {
+        results.push(row);
+      })
+      .on('end', () => {
+        console.log('CSV file successfully processed:', results);
+        // Perform further processing with the results array
+      })
+      .on('error', (err: any) => {
+        console.error('Error processing CSV file:', err);
+      });
      
 
     console.log('CSV file is valid.');

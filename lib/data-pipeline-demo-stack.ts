@@ -84,6 +84,19 @@ export class DataPipelineDemoStack extends cdk.Stack {
         role: lambdaRole
     });
 
+    s3Lambda.role?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSESFullAccess')
+    );
+
+    // Define a custom inline policy statement
+    const sesPolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+      resources: ['*'],
+    });
+
+    // Attach the custom inline policy to the Lambda's execution role
+    s3Lambda.addToRolePolicy(sesPolicyStatement);
 
      // Grant Lambda Access to Publish to SNS
      topic.grantPublish(s3Lambda);
