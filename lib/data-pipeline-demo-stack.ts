@@ -3,6 +3,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as snsSubscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as s3Notifications from 'aws-cdk-lib/aws-s3-notifications';
+import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as fs from 'fs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -29,7 +31,8 @@ export class DataPipelineDemoStack extends cdk.Stack {
       // Create S3 Bucket
       const bucket = new s3.Bucket(this, 'MyBucket1', {
       bucketName: bucketName,
-      removalPolicy: cdk.RemovalPolicy.RETAIN
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false
     });
 
 
@@ -38,14 +41,36 @@ export class DataPipelineDemoStack extends cdk.Stack {
 
 
 
-      // Create SNS Topic
+      // // Create SNS Topic
       const topic = new sns.Topic(this, 'S3UploadTopic');
 
-       // Subscribe an email to the SNS topic
+      //  // Subscribe an email to the SNS topic
        topic.addSubscription(new snsSubscriptions.EmailSubscription(email));
 
-      // Add S3 Event Notification to SNS
-      bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3Notifications.SnsDestination(topic));
+      // // Add S3 Event Notification to SNS
+     // bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3Notifications.SnsDestination(topic));
+
+      // ✅ Create Lambda Function
+      const s3Lambda = new lambda.NodejsFunction(this, 'S3UploadNotificationLambda', {
+        runtime: lambda.Runtime.NODEJS_18_X,
+        handler: 'handler',
+        entry: 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file
+        environment: {
+            BUCKET_NAME: bucket.bucketName,
+            SNS_TOPIC_ARN: topic.topicArn
+        }
+    });
+
+
+     // Grant Lambda Access to Publish to SNS
+     topic.grantPublish(s3Lambda);
+
+     //  Add S3 Event Notification to Trigger Lambda
+     bucket.addEventNotification(
+         s3.EventType.OBJECT_CREATED,
+         new s3Notifications.LambdaDestination(s3Lambda)
+     );
+
 
       // Output SNS Topic ARN
       new cdk.CfnOutput(this, 'SNSTopicARN', {

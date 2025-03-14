@@ -1,0 +1,2 @@
+CustomerID,FirstName,LastName,Email,Phone,Address,City,State,ZipCode,Country,CreatedAt
+CUST001,John,Doe,john.doe@example.com,123-456-7890,123 Main St,New York,NY,10001,USA,2024-03-14
