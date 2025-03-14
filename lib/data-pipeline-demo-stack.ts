@@ -67,7 +67,7 @@ export class DataPipelineDemoStack extends cdk.Stack {
   // Add custom inline policy
   lambdaRole.addToPolicy(new iam.PolicyStatement({
     actions: ['s3:GetObject'],
-    resources: ['arn:aws:s3:::YOUR_BUCKET_NAME/*'],
+    resources: ['arn:aws:s3:::data-pipeline-bucket-dev-one/*'],
   }));
 
 
