@@ -12,6 +12,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as fs from 'fs';
+import path = require('path');
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 // Read the config.json file
@@ -59,7 +60,7 @@ export class DataPipelineDemoStack extends cdk.Stack {
       const s3Lambda = new NodejsFunction(this, 'S3UploadNotificationLambda', {
         runtime: lambda.Runtime.NODEJS_18_X,
         handler: 'handler',
-        entry: 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file  Error: Cannot find entry file at lambda/s3-notifier.ts
+        entry: path.join(__dirname, '../lambda/s3-notifier.ts'),// 'lambda/s3-notifier.ts', // Path to Lambda TypeScript file  Error: Cannot find entry file at lambda/s3-notifier.ts
         environment: {
             BUCKET_NAME: bucket.bucketName,
             SNS_TOPIC_ARN: topic.topicArn
