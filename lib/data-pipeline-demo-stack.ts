@@ -22,9 +22,9 @@ export class DataPipelineDemoStack extends cdk.Stack {
     const region = config[env].region;
 
     // Create an S3 bucket
-    new s3.Bucket(this, 'MyBucket', {
+    new s3.Bucket(this, 'MyBucket1', {
       bucketName: bucketName,
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // Change as needed
+      removalPolicy: cdk.RemovalPolicy.RETAIN
     });
 
     //// Output the bucket name
