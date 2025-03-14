@@ -56,6 +56,22 @@ export class DataPipelineDemoStack extends cdk.Stack {
       // // Add S3 Event Notification to SNS
      // bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3Notifications.SnsDestination(topic));
 
+  // Define a custom IAM role
+  const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  });
+
+  // Attach managed policy to the role
+  lambdaRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+
+  // Add custom inline policy
+  lambdaRole.addToPolicy(new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['arn:aws:s3:::YOUR_BUCKET_NAME/*'],
+  }));
+
+
+
       // ✅ Create Lambda Function
       const s3Lambda = new NodejsFunction(this, 'S3UploadNotificationLambda', {
         runtime: lambda.Runtime.NODEJS_18_X,
@@ -64,7 +80,8 @@ export class DataPipelineDemoStack extends cdk.Stack {
         environment: {
             BUCKET_NAME: bucket.bucketName,
             SNS_TOPIC_ARN: topic.topicArn
-        }
+        },
+        role: lambdaRole
     });
 
 
