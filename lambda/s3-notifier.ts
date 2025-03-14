@@ -1,6 +1,7 @@
 import { S3Handler } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
-import * as csvParser from 'csv-parser';
+import * as csvParserModule from 'csv-parser';
+const csvParser = csvParserModule.default;
 
 const s3 = new AWS.S3();
 const ses = new AWS.SES();
