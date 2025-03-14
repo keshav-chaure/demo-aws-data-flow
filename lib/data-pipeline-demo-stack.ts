@@ -70,6 +70,11 @@ export class DataPipelineDemoStack extends cdk.Stack {
     resources: ['arn:aws:s3:::data-pipeline-bucket-dev-one/*'],
   }));
 
+  // Add custom inline policy
+  // lambdaRole.addToPolicy(new iam.PolicyStatement({
+  //   actions: ['s3:GetObject','ses:SendEmail', 'ses:SendRawEmail'],
+  //   resources: ['*','arn:aws:s3:::data-pipeline-bucket-dev-one/*'],
+  // }));
 
 
       // ✅ Create Lambda Function
@@ -83,21 +88,22 @@ export class DataPipelineDemoStack extends cdk.Stack {
         },
         role: lambdaRole
     });
+/* Below block is to send email
+//  // Attach the AmazonSESFullAccess managed policy to the Lambda's execution role
+//  s3Lambda.role?.addManagedPolicy(
+//   iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSESFullAccess')
+// );
 
-    s3Lambda.role?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSESFullAccess')
-    );
+// // Define a custom inline policy statement for specific SES actions
+// const sesPolicyStatement = new iam.PolicyStatement({
+//   effect: iam.Effect.ALLOW,
+//   actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+//   resources: ['*'],
+// });
 
-    // Define a custom inline policy statement
-    const sesPolicyStatement = new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
-      resources: ['*'],
-    });
-
-    // Attach the custom inline policy to the Lambda's execution role
-    s3Lambda.addToRolePolicy(sesPolicyStatement);
-
+// // Attach the custom inline policy to the Lambda's execution role
+// s3Lambda.addToRolePolicy(sesPolicyStatement);
+*/
      // Grant Lambda Access to Publish to SNS
      topic.grantPublish(s3Lambda);
 

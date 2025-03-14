@@ -19,39 +19,32 @@ export const handler: S3Handler = async (event) => {
       Bucket: bucketName,
       Key: objectKey,
     };
-    await sendNotification('Error processing S3 file.');
+     
     const data = await s3.getObject(params).promise();
     console.log(typeof data)
     console.log(data)
 
+    const s3Stream = await s3.getObject(params).createReadStream();
     const results: any[] = [];
-
-    // Create a readable stream from the S3 object data
-    const stream = require('stream');
-    const readableStream = new stream.Readable();
-    readableStream._read = () => {}; // _read is required but you can noop it
-    readableStream.push(data.Body);
-    readableStream.push(null);
-
-    // Pipe the readable stream into csv-parser
-    readableStream
-      .pipe(csvParser())
-      .on('data', (row: any) => {
-        results.push(row);
-      })
-      .on('end', () => {
-        console.log('CSV file successfully processed:', results);
-        // Perform further processing with the results array
-      })
-      .on('error', (err: any) => {
-        console.error('Error processing CSV file:', err);
+    await new Promise<void>((resolve, reject) => {
+        s3Stream
+          .pipe(csvParser())
+          .on('data', (data) => results.push(data))
+          .on('end', () => {
+            console.log('CSV parsing completed:', results);
+            resolve();
+          })
+          .on('error', (error) => {
+            console.error('Error parsing CSV:', error);
+            reject(error);
+          });
       });
      
 
     console.log('CSV file is valid.');
   } catch (error) {
     console.error('Error processing S3 file:', error);
-    await sendNotification('Error processing S3 file.');
+   // await sendNotification('Error processing S3 file.');
   }
 };
 
