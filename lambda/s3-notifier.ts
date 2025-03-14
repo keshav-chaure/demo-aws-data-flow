@@ -6,7 +6,7 @@ const csvParser = csvParserModule.default;
 const s3 = new AWS.S3();
 const ses = new AWS.SES();
 
-const REQUIRED_HEADERS = ['email', 'first_name', 'last_name'];
+const REQUIRED_HEADERS = ['CustomerID','Email', 'FirstName', 'LastName'];
 
 export const handler: S3Handler = async (event) => {
   const bucketName = event.Records[0].s3.bucket.name;
@@ -27,10 +27,42 @@ export const handler: S3Handler = async (event) => {
 
     const s3Stream = await s3.getObject(params).createReadStream();
     const results: any[] = [];
+    // await new Promise<void>((resolve, reject) => {
+    //     s3Stream
+    //       .pipe(csvParser())
+    //       .on('data', (data) => results.push(data))
+    //       .on('end', () => {
+    //         console.log('CSV parsing completed:', results);
+    //         resolve();
+    //       })
+    //       .on('error', (error) => {
+    //         console.error('Error parsing CSV:', error);
+    //         reject(error);
+    //       });
+    //   });
     await new Promise<void>((resolve, reject) => {
+        let headersValidated = false;
+  
         s3Stream
           .pipe(csvParser())
-          .on('data', (data) => results.push(data))
+          .on('headers', (headers) => {
+            const missingHeaders = REQUIRED_HEADERS.filter(header => !headers.includes(header));
+            if (missingHeaders.length > 0) {
+              reject(new Error(`Missing required headers: ${missingHeaders.join(', ')}`));
+            } else {
+              headersValidated = true;
+            }
+          })
+          .on('data', (data) => {
+            if (headersValidated) {
+              const missingDataFields = REQUIRED_HEADERS.filter(field => !data[field]);
+              if (missingDataFields.length > 0) {
+                console.warn(`Row with missing data fields: ${missingDataFields.join(', ')}`);
+              } else {
+                results.push(data);
+              }
+            }
+          })
           .on('end', () => {
             console.log('CSV parsing completed:', results);
             resolve();
@@ -40,7 +72,6 @@ export const handler: S3Handler = async (event) => {
             reject(error);
           });
       });
-     
 
     console.log('CSV file is valid.');
   } catch (error) {
